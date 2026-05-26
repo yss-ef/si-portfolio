@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="professeur_tree_view" model="ir.ui.view">
+            <field name="name">professeur.tree.view</field>
+            <field name="model">gestion.professeur</field>
+            <field name="arch" type="xml">
+                <tree string="Professeurs">
+                    <field name="name"/>
+                    <field name="prenom"/>
+                    <field name="email"/>
+                    <field name="specialite"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="professeur_form_view" model="ir.ui.view">
+            <field name="name">professeur.form.view</field>
+            <field name="model">gestion.professeur</field>
+            <field name="arch" type="xml">
+                <form string="Professeur">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="prenom"/>
+                            </group>
+                            <group>
+                                <field name="email"/>
+                                <field name="specialite"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cours enseignés">
+                                <field name="cours_ids">
+                                    <tree>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="niveau"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue de recherche des professeurs -->
+        <record id="professeur_search_view" model="ir.ui.view">
+            <field name="name">professeur.search.view</field>
+            <field name="model">gestion.professeur</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="prenom"/>
+                    <field name="email"/>
+                    <field name="specialite"/>
+                    
+                    <filter string="Avec email" name="avec_email" domain="[('email', '!=', False)]"/>
+                    <filter string="Sans email" name="sans_email" domain="[('email', '=', False)]"/>
+                    <separator/>
+                    <filter string="Avec cours" name="avec_cours" domain="[('cours_ids', '!=', False)]"/>
+                    <filter string="Sans cours" name="sans_cours" domain="[('cours_ids', '=', False)]"/>
+                    
+                    <group expand="0" string="Grouper par">
+                        <filter string="Spécialité" name="group_specialite" context="{'group_by': 'specialite'}"/>
+                        <filter string="Prénom" name="group_prenom" context="{'group_by': 'prenom'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="professeur_action" model="ir.actions.act_window">
+            <field name="name">Professeurs</field>
+            <field name="res_model">gestion.professeur</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_professeur" name="Professeurs" parent="menu_gestion_etudiants" action="professeur_action" sequence="20"/>
+    </data>
+</odoo>

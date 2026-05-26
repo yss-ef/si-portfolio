@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_food_quality_certificate" model="ir.actions.report">
+        <field name="name">Certificat Sanitaire</field>
+        <field name="model">food.quality.control</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestion_alimentaire.report_food_quality_template</field>
+        <field name="report_file">gestion_alimentaire.report_food_quality_template</field>
+        <field name="print_report_name">'Certificat_Sanitaire_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_food_quality_control"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_food_quality_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <div class="text-center" style="border-bottom: 2px solid black; margin-bottom: 20px;">
+                            <h2>Certificat de Conformité Sanitaire</h2>
+                            <h3>Ticket : <span t-field="o.name"/></h3>
+                        </div>
+
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Date d'inspection :</strong> <span t-field="o.inspection_date"/><br/>
+                                <strong>Inspecteur :</strong> <span t-field="o.inspector_id.name"/>
+                            </div>
+                            <div class="col-6 text-right">
+                                <strong>État :</strong> 
+                                <span t-if="o.state == 'passed'" style="background-color: #28a745; color: white; padding: 5px; border-radius: 3px;">CONFORME</span>
+                                <span t-if="o.state == 'failed'" style="background-color: #dc3545; color: white; padding: 5px; border-radius: 3px;">NON CONFORME</span>
+                                <span t-if="o.state == 'draft'">BROUILLON</span>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered mt-4">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th>Information</th>
+                                    <th>Détails</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Article</strong></td>
+                                    <td><span t-field="o.product_id.display_name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Numéro de Lot</strong></td>
+                                    <td><span t-field="o.lot_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Température Cible</strong></td>
+                                    <td><span t-field="o.target_temperature"/> °C</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Température Relevée</strong></td>
+                                    <td><span t-field="o.recorded_temperature"/> °C</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="mt-4">
+                            <strong>Observations :</strong>
+                            <p t-field="o.notes" t-if="o.notes"/>
+                            <p t-if="not o.notes">Aucune observation particulière.</p>
+                        </div>
+
+                        <div class="mt-5 text-center" style="font-style: italic; color: #666;">
+                            <p>Ce document certifie que le lot mentionné ci-dessus a été inspecté selon les normes sanitaires en vigueur.</p>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_inherit_food" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.food</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_quality_checks" type="object" class="oe_stat_button" icon="fa-check-circle text-success" invisible="not is_perishable">
+                    <field name="quality_check_count" widget="statinfo" string="Quality Checks"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='inventory']" position="after">
+                <page string="Qualité Alimentaire" name="food_quality">
+                    <group>
+                        <group string="Conservation">
+                            <field name="is_perishable"/>
+                            <field name="storage_temperature" invisible="not is_perishable"/>
+                            <field name="control_interval_days" invisible="not is_perishable"/>
+                        </group>
+                        <group string="Allergènes">
+                            <field name="allergen_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

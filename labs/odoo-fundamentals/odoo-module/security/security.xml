@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Catégorie pour notre module -->
+        <record id="module_category_gestion_etudiants" model="ir.module.category">
+            <field name="name">Éducation / Gestion Étudiants</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- Groupe Enseignant -->
+        <record id="group_enseignant" model="res.groups">
+            <field name="name">Enseignant</field>
+            <field name="category_id" ref="module_category_gestion_etudiants"/>
+        </record>
+
+        <!-- Groupe Admin Éducation -->
+        <record id="group_admin_education" model="res.groups">
+            <field name="name">Admin Éducation</field>
+            <field name="category_id" ref="module_category_gestion_etudiants"/>
+            <field name="implied_ids" eval="[(4, ref('group_enseignant'))]"/>
+        </record>
+    </data>
+</odoo>

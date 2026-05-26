@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_food_allergen_user,food.allergen,model_food_allergen,group_food_quality_user,1,0,0,0
+access_food_allergen_manager,food.allergen,model_food_allergen,group_food_quality_manager,1,1,1,1
+access_food_quality_control_user,food.quality.control,model_food_quality_control,group_food_quality_user,1,1,1,0
+access_food_quality_control_manager,food.quality.control,model_food_quality_control,group_food_quality_manager,1,1,1,1

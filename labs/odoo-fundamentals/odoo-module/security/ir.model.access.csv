@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gestion_etudiant,access_gestion_etudiant,model_gestion_etudiant,base.group_user,1,1,1,1
+access_gestion_cours,access_gestion_cours,model_gestion_cours,base.group_user,1,1,1,1
+access_professeur_user,professeur.user,model_gestion_professeur,group_enseignant,1,1,0,0
+access_professeur_admin,professeur.admin,model_gestion_professeur,group_admin_education,1,1,1,1

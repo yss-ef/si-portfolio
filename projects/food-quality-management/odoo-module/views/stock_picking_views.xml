@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_food" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.food</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_create_quality_check" 
+                        string="Créer Contrôle Qualité" 
+                        type="object" 
+                        class="oe_highlight" 
+                        invisible="picking_type_code != 'incoming'"/>
+            </header>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="move_line_ids" invisible="1"/>
+                <button name="%(gestion_alimentaire.food_quality_control_action)d" 
+                        type="action" 
+                        class="oe_stat_button" 
+                        icon="fa-check-square-o">
+                    <field name="quality_check_count" widget="statinfo" string="Contrôles"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

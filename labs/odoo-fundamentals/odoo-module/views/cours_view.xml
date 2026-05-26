@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="cours_tree_view" model="ir.ui.view">
+            <field name="name">cours.tree.view</field>
+            <field name="model">gestion.cours</field>
+            <field name="arch" type="xml">
+                <tree string="Cours">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="credits"/>
+                    <field name="professeur_id"/>
+                    <field name="niveau"/>
+                    <field name="actif"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vue Graphique des cours -->
+        <record id="cours_graph_view" model="ir.ui.view">
+            <field name="name">cours.graph.view</field>
+            <field name="model">gestion.cours</field>
+            <field name="arch" type="xml">
+                <graph string="Statistiques des cours">
+                    <field name="niveau" type="row"/>
+                    <field name="credits" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="cours_form_view" model="ir.ui.view">
+            <field name="name">cours.form.view</field>
+            <field name="model">gestion.cours</field>
+            <field name="arch" type="xml">
+                <form string="Cours">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="professeur_id"/>
+                                <field name="actif"/>
+                            </group>
+                            <group>
+                                <field name="credits"/>
+                                <field name="niveau"/>
+                                <field name="date_debut"/>
+                                <field name="date_fin"/>
+                                <field name="duree_totale"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Étudiants inscrits">
+                                <field name="etudiant_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="cours_action" model="ir.actions.act_window">
+            <field name="name">Cours</field>
+            <field name="res_model">gestion.cours</field>
+            <field name="view_mode">tree,form,graph</field>
+        </record>
+
+        <menuitem id="menu_cours" name="Cours" parent="menu_gestion_etudiants" action="cours_action" sequence="30"/>
+    </data>
+</odoo>
