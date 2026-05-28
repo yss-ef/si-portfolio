@@ -37,3 +37,8 @@ Topics covered:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+---
+Authored by Youssef Fellah.  
+Developed for the Engineering Cycle - Mundiapolis University.
