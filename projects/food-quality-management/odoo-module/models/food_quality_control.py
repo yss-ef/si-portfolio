@@ -17,6 +17,28 @@ class FoodQualityControl(models.Model):
     recorded_temperature = fields.Float(string="Température relevée (°C)", tracking=True)
     target_temperature = fields.Float(related='product_id.product_tmpl_id.storage_temperature', string="Température cible")
     
+    recorded_humidity = fields.Float(string="Humidité relevée (%)", tracking=True)
+    target_humidity = fields.Float(related='product_id.product_tmpl_id.storage_humidity', string="Humidité cible")
+
+    packaging_state = fields.Selection([
+        ('intact', 'Intact'),
+        ('damaged', 'Endommagé'),
+        ('soiled', 'Souillé'),
+        ('swollen', 'Gonflé')
+    ], string="État de l'emballage", default='intact', tracking=True)
+
+    visual_aspect = fields.Selection([
+        ('normal', 'Normal'),
+        ('abnormal', 'Anormal / Suspect')
+    ], string="Aspect visuel", default='normal', tracking=True)
+
+    smell_check = fields.Selection([
+        ('normal', 'Normal'),
+        ('suspicious', 'Suspect / Mauvaise odeur')
+    ], string="Odeur", default='normal', tracking=True)
+
+    lot_expiration_date = fields.Date(related='lot_id.expiration_date', string="Date de péremption")
+    
     state = fields.Selection([
         ('draft', 'Brouillon'),
         ('in_progress', 'En inspection'),
@@ -27,15 +49,30 @@ class FoodQualityControl(models.Model):
     notes = fields.Text(string="Observations")
     inspector_id = fields.Many2one('res.users', string="Inspecteur", default=lambda self: self.env.user, tracking=True)
 
-    @api.constrains('recorded_temperature', 'state')
-    def _check_temperature_safety(self):
+    @api.constrains('recorded_temperature', 'state', 'packaging_state', 'visual_aspect', 'smell_check')
+    def _check_food_safety(self):
         for record in self:
             if record.state == 'passed':
+                # 1. Vérification Température
                 if record.recorded_temperature > (record.target_temperature + 10.0):
                     raise ValidationError(_(
                         "SÉCURITÉ ALIMENTAIRE : Température trop élevée (%s°C) pour ce type de produit (Cible: %s°C). "
                         "Validation impossible."
                     ) % (record.recorded_temperature, record.target_temperature))
+                
+                # 2. Vérification Date de Péremption
+                if record.lot_expiration_date and record.lot_expiration_date < fields.Date.context_today(self):
+                    raise ValidationError(_(
+                        "SÉCURITÉ ALIMENTAIRE : Le lot est périmé (DLC: %s). "
+                        "Validation impossible."
+                    ) % record.lot_expiration_date)
+
+                # 3. Vérification Organoleptique
+                if record.packaging_state == 'swollen':
+                    raise ValidationError(_("ALERTE : Un emballage gonflé est un signe de risque bactérien majeur. Validation refusée."))
+                
+                if record.visual_aspect == 'abnormal' or record.smell_check == 'suspicious':
+                    raise ValidationError(_("SÉCURITÉ ALIMENTAIRE : L'aspect ou l'odeur du produit est suspect. Validation refusée."))
 
     def action_validate(self):
         for record in self:

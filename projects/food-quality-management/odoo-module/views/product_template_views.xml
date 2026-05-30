@@ -16,6 +16,7 @@
                         <group string="Conservation">
                             <field name="is_perishable"/>
                             <field name="storage_temperature" invisible="not is_perishable"/>
+                            <field name="storage_humidity" invisible="not is_perishable"/>
                             <field name="control_interval_days" invisible="not is_perishable"/>
                         </group>
                         <group string="Allergènes">

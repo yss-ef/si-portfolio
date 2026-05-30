@@ -9,6 +9,7 @@ class StockLot(models.Model):
 
     # Stocke la date du dernier passage d'un inspecteur sur ce lot précis
     last_control_date = fields.Date(string="Date du dernier contrôle")
+    expiration_date = fields.Date(string="Date de péremption (DLC/DLUO)")
     quality_check_count = fields.Integer(compute='_compute_quality_check_count')
 
     def _compute_quality_check_count(self):

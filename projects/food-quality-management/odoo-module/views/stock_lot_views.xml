@@ -12,6 +12,7 @@
             </xpath>
             <xpath expr="//group[@name='main_group']" position="after">
                 <group string="Sécurité Alimentaire">
+                    <field name="expiration_date"/>
                     <field name="last_control_date"/>
                 </group>
             </xpath>

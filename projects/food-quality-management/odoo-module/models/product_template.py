@@ -13,6 +13,9 @@ class ProductTemplate(models.Model):
     # Température optimale pour la conservation (ex: 4°C pour le frais)
     storage_temperature = fields.Float(string="Température de conservation (°C)")
     
+    # Humidité optimale pour la conservation (ex: 80% pour les légumes)
+    storage_humidity = fields.Float(string="Humidité de conservation (%)")
+    
     # Délai entre deux contrôles qualité automatiques
     control_interval_days = fields.Integer(string="Intervalle de contrôle (jours)", default=30)
     

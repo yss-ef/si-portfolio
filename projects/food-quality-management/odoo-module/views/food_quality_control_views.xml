@@ -65,6 +65,7 @@
                 <field name="lot_id"/>
                 <field name="product_id"/>
                 <field name="inspection_date"/>
+                <field name="lot_expiration_date" widget="remaining_days"/>
                 <field name="recorded_temperature"/>
                 <field name="state" widget="badge" decoration-success="state == 'passed'" decoration-danger="state == 'failed'"/>
             </tree>
@@ -86,15 +87,31 @@
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="Informations Générales">
                             <field name="lot_id" readonly="state != 'draft'"/>
                             <field name="product_id"/>
                             <field name="inspection_date" readonly="state != 'draft'"/>
+                            <field name="lot_expiration_date"/>
+                            <field name="inspector_id" readonly="1"/>
+                        </group>
+                        <group string="Mesures Physiques">
+                            <label for="recorded_temperature"/>
+                            <div class="o_row">
+                                <field name="recorded_temperature" readonly="state != 'draft'"/> / <field name="target_temperature"/> °C
+                            </div>
+                            <label for="recorded_humidity"/>
+                            <div class="o_row">
+                                <field name="recorded_humidity" readonly="state != 'draft'"/> / <field name="target_humidity"/> %
+                            </div>
+                        </group>
+                    </group>
+                    <group string="Contrôles Organoleptiques">
+                        <group>
+                            <field name="packaging_state" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
+                            <field name="visual_aspect" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
                         </group>
                         <group>
-                            <field name="target_temperature"/>
-                            <field name="recorded_temperature" readonly="state != 'draft'"/>
-                            <field name="inspector_id" readonly="1"/>
+                            <field name="smell_check" widget="radio" options="{'horizontal': true}" readonly="state != 'draft'"/>
                         </group>
                     </group>
                     <notebook>
