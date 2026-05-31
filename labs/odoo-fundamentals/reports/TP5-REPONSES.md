@@ -1,48 +1,67 @@
-# Réponses au TP5 - Sécurité et Gestion des Droits
+# Lab 5 responses: security and access management
 
-## Partie 1 : Création des Groupes de Sécurité
+This report describes the implementation of security groups and access rights
+within the Odoo 17 student management module.
 
-### Exercice 1 & 2 : Groupes et Hiérarchie
-Nous avons créé le fichier `security/security.xml` avec deux groupes principaux sous une nouvelle catégorie "Éducation / Gestion Étudiants" :
-*   **Enseignant (`group_enseignant`)** : Groupe de base pour les professeurs.
-*   **Admin Éducation (`group_admin_education`)** : Groupe administrateur qui hérite des droits du groupe Enseignant via `implied_ids`.
+## Security group creation
+
+### Groups and hierarchy
+
+We defined two primary security groups in `security/security.xml` under the
+"Education / Student Management" category:
+
+- Teacher (`group_enseignant`): The base group for instructors.
+- Education Admin (`group_admin_education`): An administrative group that
+  inherits permissions from the Teacher group using `implied_ids`.
 
 ```xml
 <record id="group_admin_education" model="res.groups">
-    <field name="name">Admin Éducation</field>
+    <field name="name">Education Admin</field>
     <field name="implied_ids" eval="[(4, ref('group_enseignant'))]"/>
 </record>
 ```
 
-## Partie 2 : Configuration des Droits d'Accès
+## Access rights configuration
 
-### Exercice 3 & 4 : Droit sur le modèle Professeur
-Le fichier `security/ir.model.access.csv` a été configuré pour différencier les accès :
-*   **Enseignants** : Peuvent lire (`perm_read=1`) et modifier (`perm_write=1`) les professeurs, mais ne peuvent pas créer (`perm_create=0`) ni supprimer (`perm_unlink=0`).
-*   **Admins Éducation** : Ont un accès complet (CRUD) sur le modèle professeur.
-*   **Tous les utilisateurs (`base.group_user`)** : Conservent un accès complet aux modèles Étudiant et Cours pour simplifier les tests du TP.
+The `security/ir.model.access.csv` file defines specific access levels for the
+Professor model:
 
-### Exercice 5 : Manifeste
-Le fichier `security/security.xml` a été ajouté dans le `__manifest__.py` **avant** le fichier CSV pour s'assurer que les groupes existent au moment où les droits d'accès sont définis.
+- Teachers: Granted read and write permissions (`perm_read=1`, `perm_write=1`)
+  but restricted from creating or deleting records (`perm_create=0`,
+  `perm_unlink=0`).
+- Education Admins: Granted full CRUD (Create, Read, Update, Delete) access.
+- All users (`base.group_user`): Retain full access to the Student and Course
+  models to facilitate testing.
 
-## Partie 3 : Test des Permissions
+The `security/security.xml` file is loaded in the `__manifest__.py` file before
+ the CSV file to ensure groups exist before access rights are applied.
 
-### Exercice 6, 7 & 8 : Observations des tests
+## Permission testing results
 
-| Utilisateur | Groupe | Accès Professeurs | Accès Étudiants/Cours |
+| User | Group | Professor Access | Student/Course Access |
 | :--- | :--- | :--- | :--- |
-| **Prof Test** | Enseignant | Lecture et Edition possible. Les boutons "Nouveau" et "Supprimer" sont masqués. | Accès complet. |
-| **Admin Test** | Admin Éducation | Accès complet. Les boutons "Nouveau" et "Supprimer" sont visibles. | Accès complet. |
+| **Test Teacher** | Teacher | Read and Edit. Create and Delete buttons are hidden. | Full Access. |
+| **Test Admin** | Education Admin | Full Access. Create and Delete buttons are visible. | Full Access. |
 
-**Différences d'interface observées :**
-1.  **Boutons d'action** : L'interface d'Odoo s'adapte dynamiquement. Pour l'Enseignant, le bouton "Créer" (ou "Nouveau") disparaît de la vue liste et du formulaire des professeurs.
-2.  **Menu Action** : L'option "Supprimer" dans le menu "Action" est absente pour l'utilisateur ayant uniquement le groupe Enseignant sur le modèle Professeur.
-3.  **Héritage** : L'Admin Test voit tout ce que le Prof Test voit, plus les droits de création/suppression, confirmant que l'héritage (`implied_ids`) fonctionne correctement.
+### Observed interface differences
 
-## Questions de réflexion
+1. Action buttons: The Odoo interface adapts dynamically. For Teachers, the
+   "Create" button is removed from the list and form views for professors.
+2. Action menu: The "Delete" option is unavailable for users with only Teacher
+   permissions on the Professor model.
+3. Inheritance: Test Admins possess all Teacher permissions plus creation and
+   deletion rights, confirming that `implied_ids` functions correctly.
 
-### 1. Quelle est l'utilité des catégories dans les groupes ?
-Les catégories permettent d'organiser les groupes dans l'interface de gestion des utilisateurs (Configuration > Utilisateurs). Cela permet de regrouper les droits par métier ou par module, rendant la configuration plus lisible.
+## Reflection questions
 
-### 2. Pourquoi l'ordre des fichiers dans le manifeste est-il important ?
-Odoo charge les fichiers dans l'ordre de la liste `data`. Si le fichier CSV fait référence à un groupe (ex: `group_enseignant`) défini dans un fichier XML, ce fichier XML doit être chargé en premier, sinon Odoo lèvera une erreur car il ne trouvera pas l'identifiant du groupe.
+### 1. What is the utility of group categories?
+
+Categories organize groups within the user management interface (Settings >
+Users). This allows for grouping rights by role or module, which improves
+configuration readability.
+
+### 2. Why is the file order in the manifest important?
+
+Odoo processes files in the order listed in the `data` key. If a CSV file
+references a group defined in an XML file, that XML file must load first to
+avoid identifier errors.

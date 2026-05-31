@@ -1,57 +1,78 @@
-# Réponses au TP3 - Contraintes et Validations
+# Lab 3 responses: constraints and validations
 
-## Partie 1 : Contraintes SQL
+This report details the implementation of SQL constraints and Python
+validations within the Odoo 17 student management module.
 
-Les contraintes SQL ont été ajoutées aux modèles pour garantir l'intégrité des données au niveau de la base de données PostgreSQL.
+## SQL constraints
 
-### Exercice 1 : Unicité du code du cours
-Dans `models/cours.py` :
+SQL constraints ensure data integrity at the PostgreSQL database level.
+
+### Course code uniqueness
+
+In `models/cours.py`:
 ```python
 _sql_constraints = [
-    ('code_unique', 'unique(code)', 'Le code du cours doit être unique !'),
+    ('code_unique', 'unique(code)', 'The course code must be unique.'),
     ...
 ]
 ```
 
-### Exercice 2 : Crédits positifs
-Dans `models/cours.py` :
+### Positive credits
+
+In `models/cours.py`:
 ```python
 _sql_constraints = [
     ...
-    ('credits_positif', 'CHECK(credits >= 0)', 'Le nombre de crédits doit être positif.')
+    ('credits_positif', 'CHECK(credits >= 0)', 'The number of credits must be positive.')
 ]
 ```
 
-### Exercice 3 & 4 : Email du professeur (Unicité et Format)
-Dans `models/professeur.py` :
+### Professor email uniqueness and format
+
+In `models/professeur.py`:
 ```python
 _sql_constraints = [
-    ('email_unique', 'unique(email)', 'L\'email du professeur doit être unique !'),
-    ('email_format', "CHECK(email LIKE '%@%.%')", 'Le format de l\'email du professeur semble incorrect.')
+    ('email_unique', 'unique(email)', 'The professor email must be unique.'),
+    ('email_format', "CHECK(email LIKE '%@%.%')", 'The email format is incorrect.')
 ]
 ```
 
-## Partie 2 : Validations Python
+## Python validations
 
-### Exercice 5 : Limitation du nombre d'étudiants
-Dans `models/cours.py`, nous avons utilisé `@api.constrains` pour limiter à 3 étudiants maximum par cours.
+### Student enrollment limit
+
+The `@api.constrains` decorator in `models/cours.py` limits each course to a
+maximum of three students.
+
 ```python
 @api.constrains('etudiant_ids')
 def _check_max_etudiants(self):
     for record in self:
         if len(record.etudiant_ids) > 3:
-            raise ValidationError("Un cours ne peut pas avoir plus de 3 étudiants inscrits !")
+            raise ValidationError("A course cannot have more than 3 students.")
 ```
 
-## Questions de réflexion
+## Reflection questions
 
-### 1. Quelle est la différence entre une contrainte SQL et une validation Python ?
-*   **Contrainte SQL :** Elle est définie au niveau de la base de données (PostgreSQL). Elle est extrêmement rapide et garantit l'intégrité même si les données sont modifiées via des scripts externes ou SQL direct. Elle est limitée à des vérifications simples sur les colonnes de la même table.
-*   **Validation Python (`@api.constrains`) :** Elle est exécutée par le serveur Odoo en Python. Elle est beaucoup plus flexible et permet de faire des vérifications complexes (ex: compter des enregistrements liés, comparer avec d'autres modèles, utiliser de la logique métier complexe). Elle ne s'applique que lorsque les données passent par l'ORM d'Odoo.
+### 1. What is the difference between a SQL constraint and a Python validation?
 
-### 2. Dans quels cas préférez-vous utiliser l'une plutôt que l'autre ?
-*   On préfère les **contraintes SQL** pour l'unicité (`unique`) et les vérifications de format ou de plage de valeurs simples (`CHECK`), car elles sont plus performantes et robustes.
-*   On préfère les **validations Python** pour tout ce qui implique des relations entre modèles (Many2many, One2many) ou des calculs impossibles ou trop complexes en SQL standard.
+- SQL constraint: Defined at the database level (PostgreSQL). It is fast and
+  ensures integrity even if data is modified outside of Odoo. It is limited to
+  simple checks within the same table.
+- Python validation (@api.constrains): Executed by the Odoo server. It offers
+  flexibility for complex checks, such as counting related records or comparing
+  data across different models. It only applies when data passes through the
+  Odoo ORM.
 
-### 3. Que se passe-t-il si vous essayez de créer un cours avec un code déjà existant ?
-Le serveur Odoo intercepte l'erreur levée par PostgreSQL et affiche une fenêtre d'alerte à l'utilisateur avec le message défini dans la contrainte : *"Le code du cours doit être unique !"*. La transaction est annulée et l'enregistrement n'est pas sauvegardé.
+### 2. When should you use one over the other?
+
+- Use SQL constraints for uniqueness, simple format checks, or value ranges to
+  ensure performance and robustness.
+- Use Python validations for logic involving relationships between models or
+  complex business calculations.
+
+### 3. What happens when creating a course with an existing code?
+
+The Odoo server intercepts the PostgreSQL error and displays an alert message
+to the user: "The course code must be unique." The transaction is rolled back,
+and the record is not saved.
